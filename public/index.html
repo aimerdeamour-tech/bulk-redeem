@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bulk Gift Code Redeem</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #020617;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    h1 {
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 14px;
+    }
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    button {
+      margin-top: 20px;
+      background: #22c55e;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #16a34a;
+    }
+    .results {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    .success {
+      color: #22c55e;
+    }
+    .failed {
+      color: #ef4444;
+    }
+    footer {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Bulk Gift Code Redeem</h1>
+
+    <label>Gift Code</label>
+    <input id="giftCode" placeholder="Enter gift code" />
+
+    <label>Player IDs (one per line)</label>
+    <textarea id="playerIds" placeholder="12345&#10;67890&#10;ABCDE"></textarea>
+
+    <button onclick="redeem()">Redeem</button>
+
+    <div class="results" id="results"></div>
+
+    <footer>
+      This is an independent bulk redeem tool.
+    </footer>
+  </div>
+
+  <script>
+    async function redeem() {
+      const giftCode = document.getElementById("giftCode").value.trim();
+      const playerIds = document
+        .getElementById("playerIds")
+        .value
+        .split("\n")
+        .map(v => v.trim())
+        .filter(Boolean);
+
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "Processing...";
+
+      const res = await fetch("/api/redeem", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ giftCode, playerIds })
+      });
+
+      const data = await res.json();
+      resultsDiv.innerHTML = "";
+
+      data.results.forEach(r => {
+        const div = document.createElement("div");
+        div.className = r.status === "SUCCESS" ? "success" : "failed";
+        div.textContent = `${r.playerId}: ${r.status} (${r.message})`;
+        resultsDiv.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>
