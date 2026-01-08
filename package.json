@@ -1,0 +1,12 @@
+{
+  "name": "bulk-redeem",
+  "version": "1.0.0",
+  "description": "Bulk gift code redeem tool",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
